@@ -1,0 +1,271 @@
+() recv_internal() {
+}
+int tlen (tuple t) asm "TLEN";
+cell shift_text(cell text, int shift) asm """
+    26 PUSHINT
+    MOD
+    26 ADDCONST
+    26 PUSHINT
+    MOD
+    SWAP
+    CTOS
+    32 PUSHINT
+    SDSKIPFIRST
+    NIL
+    NIL
+    0 PUSHINT
+    1 PUSHINT
+    WHILE:<{
+    }>DO<{
+      0 PUSHINT
+      s4 PUSH
+      SBITS
+      0 EQINT
+      IF:<{
+        s4 PUSH
+        SREFS
+        1 EQINT
+        IF:<{
+          DROP
+          1 PUSHINT
+          s0 s4 XCHG
+          LDREF
+          DROP
+          CTOS
+          s0 s4 XCHG
+        }>
+      }>ELSE<{
+        DROP
+        1 PUSHINT
+        s0 s4 XCHG
+        8 LDU
+        OVER
+        91 LESSINT
+        s2 PUSH
+        64 GTINT
+        AND
+        IF:<{
+          SWAP
+          -65 ADDCONST
+          s6 PUSH
+          ADD
+          26 PUSHINT
+          MOD
+          65 ADDCONST
+          SWAP
+        }>
+        OVER
+        96 GTINT
+        s2 PUSH
+        123 LESSINT
+        AND
+        IF:<{
+          SWAP
+          -97 ADDCONST
+          s6 PUSH
+          ADD
+          26 PUSHINT
+          MOD
+          97 ADDCONST
+          SWAP
+        }>
+        s3 PUSH
+        TLEN
+        8 PUSHPOW2DEC
+        EQUAL
+        IF:<{
+          s4 s3 XCHG2
+          TPUSH
+          NIL
+          s4 s3 XCHG2
+        }>
+        s3 s3 XCHG2
+        TPUSH
+        SWAP
+        INC
+        s1 s0 s4 XCHG3
+      }>
+    }>
+    s3 POP
+    1 3 BLKDROP2
+    TPUSH
+    NEWC
+    0 PUSHINT
+    SWAP
+    32 STU
+    0 PUSHINT
+    s0 s0 PUSH2
+    WHILE:<{
+      s0 s5 PUSH2
+      LESS
+      OVER
+      INC
+      124 LESSINT
+      AND
+    }>DO<{
+      s4 s2 PUSH2
+      INDEXVAR
+      s2 PUSH
+      INDEXVAR
+      s0 s4 XCHG2
+      8 STU
+      s0 s3 XCHG
+      INC
+      SWAP
+      INC
+      s4 s2 PUSH2
+      INDEXVAR
+      TLEN
+      s1 s(-1) PUXC
+      EQUAL
+      IF:<{
+        DROP
+        0 PUSHINT
+        s0 s2 XCHG
+        INC
+        s0 s2 XCHG
+      }>
+      SWAP
+    }>
+    NIL
+    NIL
+    s5 PUSH
+    TPUSH
+    s5 POP
+    WHILE:<{
+      s1 s6 PUSH2
+      LESS
+    }>DO<{
+      NEWC
+      0 PUSHINT
+      WHILE:<{
+        s3 s8 PUSH2
+        LESS
+        OVER
+        INC
+        128 LESSINT
+        AND
+      }>DO<{
+        s7 s5 PUSH2
+        INDEXVAR
+        s5 PUSH
+        INDEXVAR
+        ROT
+        8 STU
+        s0 s3 XCHG
+        INC
+        s0 s4 XCHG
+        INC
+        SWAP
+        INC
+        s7 s5 PUSH2
+        INDEXVAR
+        TLEN
+        s2 s(-1) PUXC
+        EQUAL
+        IF:<{
+          NIP
+          0 PUSHINT
+          s0 s5 XCHG
+          INC
+          s5 s5 XCHG2
+        }>
+        s1 s4 XCHG
+        s1 s3 XCHG
+      }>
+      DROP
+      s5 PUSH
+      TLEN
+      8 PUSHPOW2DEC
+      EQUAL
+      IF:<{
+        s0 s5 XCHG
+        TPUSH
+        NIL
+        s0 s5 XCHG
+      }>
+      s5 s5 XCPU
+      TPUSH
+      s5 POP
+    }>
+    s6 POP
+    3 BLKDROP
+    NIP
+    TPUSH
+    DUP
+    TLEN
+    DEC
+    2DUP
+    INDEXVAR
+    TLEN
+    DEC
+    s2 s1 PUSH2
+    INDEXVAR
+    OVER
+    INDEXVAR
+    ENDC
+    SWAP
+    DEC
+    DUP
+    0 LESSINT
+    IF:<{
+      s0 s2 XCHG
+      DEC
+      DUP
+      -1 GTINT
+      IF:<{
+        s2 POP
+        s2 s1 PUSH2
+        INDEXVAR
+        TLEN
+        DEC
+        s0 s2 XCHG
+      }>
+      s0 s2 XCHG
+    }>
+    WHILE:<{
+      s2 PUSH
+      -1 GTINT
+      OVER
+      -1 GTINT
+      AND
+    }>DO<{
+      2OVER
+      INDEXVAR
+      OVER
+      INDEXVAR
+      s1 s2 XCHG
+      STREF
+      ENDC
+      SWAP
+      DEC
+      DUP
+      0 LESSINT
+      IF:<{
+        s0 s2 XCHG
+        DEC
+        DUP
+        -1 GTINT
+        IF:<{
+          s2 POP
+          s2 s1 PUSH2
+          INDEXVAR
+          TLEN
+          DEC
+          s0 s2 XCHG
+        }>
+        s0 s2 XCHG
+      }>
+    }>
+    s1 s3 XCHG
+    3 BLKDROP""";
+
+;; testable
+(cell) caesar_cipher_encrypt(int shift, cell text) method_id {
+  return shift_text(text, shift);
+}
+
+;; testable
+(cell) caesar_cipher_decrypt(int shift, cell text) method_id {
+  return shift_text(text, - shift);
+}

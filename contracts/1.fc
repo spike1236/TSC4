@@ -1,0 +1,44 @@
+() recv_internal() {
+}
+forall X -> (tuple, ()) pb (tuple tail, X head) asm "CONS";
+forall X -> (tuple, (X)) ppb (tuple t) asm "UNCONS";
+int cell_hash(cell c) asm "HASHCU";
+forall X -> int is_null (X x) asm "ISNULL";
+;; testable
+cell dfs(int hash, cell tree) asm """
+    c2 SAVE
+    SAMEALTSAVE
+    PUSHNULL
+    SWAP
+    CONS
+    WHILE:<{
+      DUP
+      ISNULL
+      NOT
+    }>DO<{
+      UNCONS
+      DUP
+      HASHCU
+      s3 PUSH
+      EQUAL
+      IFJMP:<{
+        2 1 BLKDROP2
+        RETALT
+      }>
+      CTOS
+      DUP
+      SREFS
+      REPEAT:<{
+        LDREF
+        -ROT
+        CONS
+        SWAP
+      }>
+      DROP
+    }>
+    2DROP
+    NEWC
+    ENDC""";
+(cell) find_branch_by_hash(int hash, cell tree) method_id {
+  return dfs(hash, tree);
+}

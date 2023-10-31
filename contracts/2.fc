@@ -1,0 +1,59 @@
+() recv_internal() {
+}
+tuple a(tuple b, tuple c) asm """OVER
+    TLEN
+    OVER
+    TLEN
+    s2 PUSH
+    FIRST
+    TLEN
+    NIL
+    0 PUSHINT
+    WHILE:<{
+      s0 s4 PUSH2
+      LESS
+    }>DO<{
+      NIL
+      0 PUSHINT
+      WHILE:<{
+        s0 s4 PUSH2
+        LESS
+      }>DO<{
+        0 PUSHINT
+        DUP
+        WHILE:<{
+          s0 s7 PUSH2
+          LESS
+        }>DO<{
+          s10 s4 PUSH2
+          INDEXVAR
+          OVER
+          INDEXVAR
+          s10 s1 PUSH2
+          INDEXVAR
+          s4 PUSH
+          INDEXVAR
+          MUL
+          s1 s2 XCHG
+          ADD
+          SWAP
+          INC
+        }>
+        DROP
+        s1 s2 XCHG
+        TPUSH
+        SWAP
+        INC
+      }>
+      DROP
+      SWAP
+      INC
+      -ROT
+      TPUSH
+      SWAP
+    }>
+    s1 s6 XCHG
+    6 BLKDROP""";
+(tuple) matrix_multiplier(tuple c, tuple d) method_id {
+  return a(c, d);
+}

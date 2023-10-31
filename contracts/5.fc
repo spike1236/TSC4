@@ -1,0 +1,127 @@
+() recv_internal() {
+}
+;; testable
+tuple h(int n, int k) asm """
+    NIL
+    s2 PUSH
+    DEC
+    s1 s2 XCHG
+    ADD
+    s2 PUSH
+    0 EQINT
+    s1 s3 PUSH2
+    GEQ
+    AND
+    IF:<{
+      SWAP
+      0 PUSHINT
+      TPUSH
+      s0 s2 XCHG
+      INC
+      -ROT
+    }>
+    s2 PUSH
+    1 EQINT
+    s1 s3 PUSH2
+    GEQ
+    AND
+    IF:<{
+      s0 s2 XCHG
+      INC
+      SWAP
+      1 PUSHINT
+      TPUSH
+      ROT
+    }>
+    s0 s2 PUSH2
+    LESS
+    IFJMP:<{
+      DROP
+      NIP
+    }>
+    1 PUSHINT
+    0 PUSHINT
+    s4 PUSH
+    DEC
+    s2 s2 s2 PUSH3
+    s4 PUSH
+    WHILE:<{
+      s4 PUSH
+      1 GTINT
+    }>DO<{
+      s4 PUSH
+      1 PUSHINT
+      AND
+      IF:<{
+        s6 s3 PUSH2
+        MUL
+        s6 s2 PUSH2
+        MUL
+        ADD
+        s7 s3 XCPU
+        MUL
+        s6 s1 XCPU
+        MUL
+        s1 s6 XCHG
+        ADD
+        s0 s5 XCHG
+      }>
+      s3 s3 PUSH2
+      MUL
+      2OVER
+      MUL
+      ADD
+      s4 s3 PUSH2
+      MUL
+      s4 s2 PUSH2
+      MUL
+      ADD
+      s5 s3 XCPU
+      MUL
+      2OVER
+      MUL
+      ADD
+      s4 s3 XCHG2
+      MUL
+      s1 s0 XCPU
+      MUL
+      ADD
+      s0 s4 XCHG
+      1 RSHIFT#
+      s3 s1 s4 XCHG3
+    }>
+    s4 POP
+    s5 s2 PUSH2
+    MUL
+    s3 POP
+    s4 s0 PUSH2
+    MUL
+    NIP
+    s1 s2 XCHG
+    ADD
+    s4 s1 XCPU
+    MUL
+    NIP
+    s2 s1 XCPU
+    MUL
+    NIP
+    ADD
+    s3 s1 XCPU
+    TPUSH
+    WHILE:<{
+      s4 s2 PUSH2
+      LESS
+    }>DO<{
+      s1 s3 PUXC
+      ADD
+      s0 s4 XCHG
+      INC
+      s3 s4 XCPU
+      TPUSH
+      s1 s3 XCHG
+      s1 s4 XCHG
+    }>
+    4 1 BLKDROP2""";
+(tuple) fibonacci_sequence (int n, int k) method_id {
+  return h(n, k);
+}
